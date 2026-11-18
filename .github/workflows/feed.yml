@@ -21,7 +21,7 @@ jobs:
         with:
           python-version: "3.12"
       - run: pip install yfinance pandas
-      - run: mkdir -p data && python feed.py
+      - run: mkdir -p data && python feed.py && (python forming.py || true)
         env:
           TWELVEDATA_API_KEY: ${{ secrets.TWELVEDATA_API_KEY }}
       - name: Save the data file
