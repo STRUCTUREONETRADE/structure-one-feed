@@ -20,6 +20,8 @@ jobs:
           python-version: "3.12"
       - run: pip install yfinance pandas
       - run: mkdir -p data && python feed.py
+        env:
+          TWELVEDATA_API_KEY: ${{ secrets.TWELVEDATA_API_KEY }}
       - name: Save the data file
         run: |
           git config user.name "feed-bot"
