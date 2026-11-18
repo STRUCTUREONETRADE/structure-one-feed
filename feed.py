@@ -33,9 +33,27 @@ out = {"generated": now.tz_convert("UTC").isoformat(timespec="seconds"), "tz": E
                "quote = latest 30-minute price",
        "h1": {}, "forming": {}, "daily": {}, "monthly": {}, "quote": {}}
 today = now.strftime("%Y-%m-%d")
+def fresh(s, kind):
+    """Yahoo sometimes drops one symbol from a batch; fetch it alone once more."""
+    if kind == "m30":
+        return yf.download(s, period="30d", interval="30m", group_by="ticker", auto_adjust=False, prepost=False,
+                           progress=False)
+    return yf.download(s, period="10y", interval="1d", group_by="ticker", auto_adjust=False, progress=False)
+
+
+def get(df, s, kind):
+    try:
+        d = one(df, s)
+    except Exception:
+        d = pd.DataFrame()
+    if d.empty:
+        d = one(fresh(s, kind), s)
+    return d
+
+
 for s in SYMS:
     try:
-        d = one(m30, s)
+        d = get(m30, s, "m30")
         d.index = d.index.tz_convert(ET)
         close_at = (d.index + pd.Timedelta(minutes=30)).ceil("h")
         g = d.groupby(close_at).agg(Open=("Open", "first"), High=("High", "max"), Low=("Low", "min"),
@@ -45,7 +63,7 @@ for s in SYMS:
         if rows and rows[-1][0] > now:
             out["forming"][s] = rows[-1][1]
 
-        dd = one(day, s)
+        dd = get(day, s, "d")
         dd.index = pd.to_datetime(dd.index).strftime("%Y-%m-%d")
         done_day = [row(i, r) for i, r in dd.iterrows()
                     if i < today or (i == today and now.hour * 60 + now.minute >= 16 * 60 + 15)]
