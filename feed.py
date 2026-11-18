@@ -88,7 +88,7 @@ out = {"generated": now.tz_convert("UTC").isoformat(timespec="seconds"), "tz": E
        "note": "h1 = completed 1-hour candles labelled by CLOSE time (10:00 = C1 ... 16:00 = C7); "
                "forming = the hour still in progress; daily = completed sessions (last 260); "
                "monthly = month candles built from completed sessions, labelled YYYY-MM (the last one is the month in progress); "
-               "quote = latest 30-minute price; full chart history per symbol is in data/chart/<SYM>.json",
+               "quote = close of the last completed 1-hour candle (t = its close time); full chart history per symbol is in data/chart/<SYM>.json",
        "h1": {}, "forming": {}, "daily": {}, "monthly": {}, "quote": {}}
 td_used = 0
 for s in SYMS:
@@ -140,12 +140,14 @@ for s in SYMS:
         json.dump({"sym": s, "generated": out["generated"], "h1": hist["h1"], "d": done_day[-D_KEEP:],
                    "m": months[-M_KEEP:]}, open(f"data/chart/{s}.json", "w"), separators=(",", ":"))
 
-        last_t = d.index[-1]
-        p = round(float(d["Close"].iloc[-1]), 2)
-        qd = last_t.strftime("%Y-%m-%d")
+        # the quote is the close of the last COMPLETED 1-hour candle (C1 10:00 ... C7 16:00)
+        lastc = recent[-1] if recent else None
+        if lastc is None:
+            raise RuntimeError("no completed 1-hour candle")
+        p = lastc[4]
+        qd = lastc[0][:10]
         prev = [x for x in done_day if x[0] < qd]
-        at = min(last_t + pd.Timedelta(minutes=30), now)
-        q = {"p": p, "d": qd, "t": at.strftime("%H:%M")}
+        q = {"p": p, "d": qd, "t": lastc[0][11:16]}
         if prev:
             q["prev"] = prev[-1][4]
             q["c"] = round((p / prev[-1][4] - 1) * 100, 2)

@@ -1,0 +1,48 @@
+name: Hourly closes (session loop)
+# Two long jobs cover the trading day. Each waits for every 1-hour close
+# (10:00 = C1 ... 16:00 = C7, New York time), runs the feed about a minute later
+# and saves the data, so the website gets each candle within minutes of its close.
+# GitHub may start a scheduled job late; the loop still catches every close.
+on:
+  schedule:
+    - cron: "20 13 * * 1-5"   # morning job (8:20 ET in winter, 9:20 ET in summer)
+    - cron: "0 18 * * 1-5"    # afternoon job (1:00 PM ET in winter, 2:00 PM ET in summer)
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: feed-loop-${{ github.event.schedule || 'manual' }}
+  cancel-in-progress: false
+jobs:
+  loop:
+    runs-on: ubuntu-latest
+    timeout-minutes: 355
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install yfinance pandas
+      - name: Run the feed after every hourly close
+        env:
+          TWELVEDATA_API_KEY: ${{ secrets.TWELVEDATA_API_KEY }}
+        run: |
+          git config user.name "feed-bot"
+          git config user.email "feed-bot@users.noreply.github.com"
+          mkdir -p data
+          started=$(date +%s)
+          for target in 10:01 11:01 12:01 13:01 14:01 15:01 16:01 16:20; do
+            now_et=$(TZ=America/New_York date +%H:%M)
+            if [[ "$now_et" > "$target" ]]; then continue; fi
+            # stay inside GitHub's 6-hour job limit
+            wait=$(( $(TZ=America/New_York date -d "$target" +%s) - $(date +%s) ))
+            if (( $(date +%s) - started + wait > 20700 )); then echo "Leaving $target to the other job"; break; fi
+            echo "Waiting ${wait}s for $target ET"; sleep "$wait"
+            git pull -q --rebase origin main || true
+            python feed.py || { echo "feed failed at $target"; continue; }
+            git add data
+            git commit -q -m "Hourly close $target ET $(date -u +%FT%TZ)" || { echo "No changes"; continue; }
+            for i in 1 2 3; do git pull -q --rebase -X theirs origin main && git push -q && break; sleep 5; done
+          done

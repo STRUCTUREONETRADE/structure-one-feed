@@ -1,7 +1,9 @@
 name: Hourly feed
+# Backup run each hour (GitHub may start these late); the session loop in
+# feed-loop.yml is the main source of fresh hourly closes.
 on:
   schedule:
-    - cron: "7 13-21 * * 1-5"   # every hour at :07, about 9 AM–4 PM ET, weekdays
+    - cron: "37 13-21 * * 1-5"
   workflow_dispatch:
 permissions:
   contents: write
