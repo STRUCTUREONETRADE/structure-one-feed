@@ -23,13 +23,15 @@ def row(label, r):
 
 m30 = yf.download(SYMS, period="30d", interval="30m", group_by="ticker",
                   auto_adjust=False, prepost=False, progress=False, threads=True)
-day = yf.download(SYMS, period="9mo", interval="1d", group_by="ticker",
+day = yf.download(SYMS, period="10y", interval="1d", group_by="ticker",
                   auto_adjust=False, progress=False, threads=True)
 
 out = {"generated": now.tz_convert("UTC").isoformat(timespec="seconds"), "tz": ET,
        "note": "h1 = completed 1-hour candles labelled by CLOSE time (10:00 = C1 ... 16:00 = C7); "
-               "forming = the hour still in progress; daily = completed sessions; quote = latest 30-minute price",
-       "h1": {}, "forming": {}, "daily": {}, "quote": {}}
+               "forming = the hour still in progress; daily = completed sessions (last 260); "
+               "monthly = month candles built from completed sessions, labelled YYYY-MM (the last one is the month in progress); "
+               "quote = latest 30-minute price",
+       "h1": {}, "forming": {}, "daily": {}, "monthly": {}, "quote": {}}
 today = now.strftime("%Y-%m-%d")
 for s in SYMS:
     try:
@@ -47,7 +49,12 @@ for s in SYMS:
         dd.index = pd.to_datetime(dd.index).strftime("%Y-%m-%d")
         done_day = [row(i, r) for i, r in dd.iterrows()
                     if i < today or (i == today and now.hour * 60 + now.minute >= 16 * 60 + 15)]
-        out["daily"][s] = done_day
+        out["daily"][s] = done_day[-260:]
+        if done_day:
+            md = pd.DataFrame(done_day, columns=["d", "Open", "High", "Low", "Close", "Volume"])
+            md.index = pd.to_datetime(md["d"])
+            mo = md.resample("MS").agg({"Open": "first", "High": "max", "Low": "min", "Close": "last", "Volume": "sum"}).dropna()
+            out["monthly"][s] = [row(t.strftime("%Y-%m"), r) for t, r in mo.iterrows()]
 
         last_t = d.index[-1]
         p = round(float(d["Close"].iloc[-1]), 2)
