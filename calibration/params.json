@@ -1,0 +1,29 @@
+{
+  "about": "Structure One options calibration. Hand-edited settings for picking strikes from an uploaded 7-21 DTE chain. calib.py merges these with measured volatility (HV20, HV60, ATR) and the 13-week T-bill rate, writes data/calibration.json and adds a 'cal' block to every data/chart/SYM.json the site reads. Change a value here, commit, and the next feed run carries it to the site.",
+  "defaults": {
+    "dteMin": 7,
+    "dteMax": 21,
+    "deltaMin": 0.45,
+    "deltaMax": 0.65,
+    "deltaTarget": 0.55,
+    "maxSpreadPct": 8,
+    "minOpenInterest": 100,
+    "minVolume": 0,
+    "thetaMaxPctPerDay": 5,
+    "stopPct": 25,
+    "ivHvMax": 1.8,
+    "dividendYield": 0,
+    "weights": {"delta": 0.30, "spread": 0.20, "liquidity": 0.15, "theta": 0.15, "iv": 0.10, "dte": 0.10}
+  },
+  "symbols": {
+    "SPY": {"maxSpreadPct": 3, "minOpenInterest": 500},
+    "QQQ": {"maxSpreadPct": 3, "minOpenInterest": 500},
+    "AAPL": {"maxSpreadPct": 5}, "MSFT": {"maxSpreadPct": 5}, "NVDA": {"maxSpreadPct": 5},
+    "AMZN": {"maxSpreadPct": 5}, "META": {"maxSpreadPct": 5}, "GOOG": {"maxSpreadPct": 5},
+    "TSLA": {"maxSpreadPct": 5}, "AMD": {"maxSpreadPct": 6}, "NFLX": {"maxSpreadPct": 6},
+    "AVGO": {"maxSpreadPct": 6}, "MU": {"maxSpreadPct": 6}, "GLD": {"maxSpreadPct": 6},
+    "SLV": {"maxSpreadPct": 8}, "USO": {"maxSpreadPct": 8}, "JPM": {"maxSpreadPct": 8},
+    "BAC": {"maxSpreadPct": 8}, "XOM": {"maxSpreadPct": 8}, "CVX": {"maxSpreadPct": 8},
+    "OXY": {"maxSpreadPct": 8}, "INTC": {"maxSpreadPct": 8}
+  }
+}

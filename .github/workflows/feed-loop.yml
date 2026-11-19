@@ -47,6 +47,7 @@ jobs:
             if [[ "$target" == *:01 || "$target" == "16:20" ]]; then
               python feed.py || { echo "feed failed at $target"; continue; }
               python forming.py || echo "forming failed at $target"
+              python calib.py || echo "calibration failed at $target"
               git add data
               msg="Hourly close $target ET"
             else
