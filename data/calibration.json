@@ -1,0 +1,583 @@
+{
+ "generated": "2026-11-19T14:34:25+00:00",
+ "rate": {
+  "value": 0.0415,
+  "asof": "2026-11-19",
+  "source": "^IRX 13-week T-bill (Yahoo Finance)"
+ },
+ "defaults": {
+  "dteMin": 7,
+  "dteMax": 21,
+  "dteTargets": [
+   7,
+   10,
+   14,
+   21
+  ],
+  "anchorMin": 10,
+  "maxSpreadPct": 5,
+  "stopPct": 25,
+  "thetaMaxPctPerDay": 5,
+  "ivHvMax": 1.8,
+  "dividendYield": 0,
+  "weights": {
+   "delta": 0.35,
+   "spread": 0.25,
+   "liquidity": 0.2,
+   "theta": 0.1,
+   "iv": 0.1
+  }
+ },
+ "symbols": {
+  "AAPL": {
+   "overrides": {
+    "band": 0.35,
+    "material": 0.8,
+    "deltaMin": 0.45,
+    "deltaMax": 0.82,
+    "liqTier": 2,
+    "minOpenInterest": 2000,
+    "minVolume": 500,
+    "expiries": "weekly",
+    "etf": false,
+    "ivBands": [
+     18,
+     28,
+     38
+    ]
+   },
+   "measured": {
+    "asof": "2026-11-18",
+    "last": 352.45,
+    "hv20": 0.2721,
+    "hv60": 0.221,
+    "atrPct": 2.679
+   }
+  },
+  "AMD": {
+   "overrides": {
+    "band": 0.6,
+    "material": 1.75,
+    "deltaMin": 0.46,
+    "deltaMax": 0.82,
+    "liqTier": 2,
+    "minOpenInterest": 2000,
+    "minVolume": 500,
+    "expiries": "weekly",
+    "etf": false,
+    "ivBands": [
+     34,
+     60,
+     85
+    ]
+   },
+   "measured": {
+    "asof": "2026-11-18",
+    "last": 530.14,
+    "hv20": 1.2526,
+    "hv60": 0.8261,
+    "atrPct": 9.462
+   }
+  },
+  "AMZN": {
+   "overrides": {
+    "band": 0.45,
+    "material": 0.95,
+    "deltaMin": 0.42,
+    "deltaMax": 0.78,
+    "liqTier": 2,
+    "minOpenInterest": 2000,
+    "minVolume": 500,
+    "expiries": "weekly",
+    "etf": false,
+    "ivBands": [
+     22,
+     34,
+     55
+    ]
+   },
+   "measured": {
+    "asof": "2026-11-18",
+    "last": 267.74,
+    "hv20": 0.4235,
+    "hv60": 0.3289,
+    "atrPct": 4.108
+   }
+  },
+  "AVGO": {
+   "overrides": {
+    "band": 0.6,
+    "material": 1.55,
+    "deltaMin": 0.45,
+    "deltaMax": 0.82,
+    "liqTier": 2,
+    "minOpenInterest": 2000,
+    "minVolume": 500,
+    "expiries": "weekly",
+    "etf": false,
+    "ivBands": [
+     30,
+     52,
+     72
+    ]
+   },
+   "measured": {
+    "asof": "2026-11-18",
+    "last": 354.05,
+    "hv20": 0.7351,
+    "hv60": 0.5048,
+    "atrPct": 5.923
+   }
+  },
+  "BAC": {
+   "overrides": {
+    "band": 0.35,
+    "material": 0.75,
+    "deltaMin": 0.42,
+    "deltaMax": 0.78,
+    "liqTier": 2,
+    "minOpenInterest": 2000,
+    "minVolume": 500,
+    "expiries": "weekly",
+    "etf": false,
+    "ivBands": [
+     18,
+     30,
+     44
+    ]
+   },
+   "measured": {
+    "asof": "2026-11-18",
+    "last": 48.91,
+    "hv20": 0.2544,
+    "hv60": 0.2421,
+    "atrPct": 2.508
+   }
+  },
+  "CVX": {
+   "overrides": {
+    "band": 0.35,
+    "material": 0.8,
+    "deltaMin": 0.45,
+    "deltaMax": 0.82,
+    "liqTier": 3,
+    "minOpenInterest": 500,
+    "minVolume": 200,
+    "expiries": "weekly",
+    "etf": false,
+    "ivBands": [
+     18,
+     28,
+     38
+    ]
+   },
+   "measured": {
+    "asof": "2026-11-18",
+    "last": 205.88,
+    "hv20": 0.3099,
+    "hv60": 0.2561,
+    "atrPct": 2.791
+   }
+  },
+  "GLD": {
+   "overrides": {
+    "band": 0.25,
+    "material": 0.9,
+    "deltaMin": 0.42,
+    "deltaMax": 0.78,
+    "liqTier": 3,
+    "minOpenInterest": 500,
+    "minVolume": 200,
+    "expiries": "weekly",
+    "etf": true,
+    "ivBands": [
+     14,
+     28,
+     48
+    ]
+   },
+   "measured": {
+    "asof": "2026-11-18",
+    "last": 341.19,
+    "hv20": 0.2977,
+    "hv60": 0.2458,
+    "atrPct": 2.322
+   }
+  },
+  "GOOG": {
+   "overrides": {
+    "band": 0.4,
+    "material": 0.95,
+    "deltaMin": 0.42,
+    "deltaMax": 0.78,
+    "liqTier": 2,
+    "minOpenInterest": 2000,
+    "minVolume": 500,
+    "expiries": "weekly",
+    "etf": false,
+    "ivBands": [
+     22,
+     32,
+     48
+    ]
+   },
+   "measured": {
+    "asof": "2026-11-18",
+    "last": 279.2,
+    "hv20": 0.5341,
+    "hv60": 0.3575,
+    "atrPct": 3.374
+   }
+  },
+  "INTC": {
+   "overrides": {
+    "band": 0.6,
+    "material": 1.7,
+    "deltaMin": 0.45,
+    "deltaMax": 0.82,
+    "liqTier": 2,
+    "minOpenInterest": 2000,
+    "minVolume": 500,
+    "expiries": "weekly",
+    "etf": false,
+    "ivBands": [
+     34,
+     58,
+     112
+    ]
+   },
+   "measured": {
+    "asof": "2026-11-18",
+    "last": 54.67,
+    "hv20": 1.4271,
+    "hv60": 0.9826,
+    "atrPct": 11.179
+   }
+  },
+  "JPM": {
+   "overrides": {
+    "band": 0.35,
+    "material": 0.7,
+    "deltaMin": 0.42,
+    "deltaMax": 0.78,
+    "liqTier": 2,
+    "minOpenInterest": 2000,
+    "minVolume": 500,
+    "expiries": "weekly",
+    "etf": false,
+    "ivBands": [
+     16,
+     28,
+     42
+    ]
+   },
+   "measured": {
+    "asof": "2026-11-18",
+    "last": 324.11,
+    "hv20": 0.299,
+    "hv60": 0.2151,
+    "atrPct": 2.623
+   }
+  },
+  "META": {
+   "overrides": {
+    "band": 0.5,
+    "material": 1.05,
+    "deltaMin": 0.46,
+    "deltaMax": 0.82,
+    "liqTier": 2,
+    "minOpenInterest": 2000,
+    "minVolume": 500,
+    "expiries": "weekly",
+    "etf": false,
+    "ivBands": [
+     22,
+     40,
+     62
+    ]
+   },
+   "measured": {
+    "asof": "2026-11-18",
+    "last": 616.38,
+    "hv20": 0.417,
+    "hv60": 0.4428,
+    "atrPct": 3.366
+   }
+  },
+  "MSFT": {
+   "overrides": {
+    "band": 0.35,
+    "material": 0.85,
+    "deltaMin": 0.45,
+    "deltaMax": 0.82,
+    "liqTier": 2,
+    "minOpenInterest": 2000,
+    "minVolume": 500,
+    "expiries": "weekly",
+    "etf": false,
+    "ivBands": [
+     18,
+     30,
+     52
+    ]
+   },
+   "measured": {
+    "asof": "2026-11-18",
+    "last": 508.29,
+    "hv20": 0.3737,
+    "hv60": 0.2786,
+    "atrPct": 3.524
+   }
+  },
+  "MU": {
+   "overrides": {
+    "band": 0.7,
+    "material": 1.7,
+    "deltaMin": 0.46,
+    "deltaMax": 0.82,
+    "liqTier": 2,
+    "minOpenInterest": 2000,
+    "minVolume": 500,
+    "expiries": "weekly",
+    "etf": false,
+    "ivBands": [
+     34,
+     58,
+     110
+    ]
+   },
+   "measured": {
+    "asof": "2026-11-18",
+    "last": 705.27,
+    "hv20": 1.0581,
+    "hv60": 0.7243,
+    "atrPct": 9.28
+   }
+  },
+  "NFLX": {
+   "overrides": {
+    "band": 0.5,
+    "material": 1.25,
+    "deltaMin": 0.48,
+    "deltaMax": 0.82,
+    "liqTier": 3,
+    "minOpenInterest": 500,
+    "minVolume": 200,
+    "expiries": "weekly",
+    "etf": false,
+    "ivBands": [
+     25,
+     42,
+     56
+    ]
+   },
+   "measured": {
+    "asof": "2026-11-18",
+    "last": 59.82,
+    "hv20": 0.3335,
+    "hv60": 0.3404,
+    "atrPct": 3.096
+   }
+  },
+  "NVDA": {
+   "overrides": {
+    "band": 0.6,
+    "material": 1.45,
+    "deltaMin": 0.46,
+    "deltaMax": 0.82,
+    "liqTier": 2,
+    "minOpenInterest": 2000,
+    "minVolume": 500,
+    "expiries": "weekly",
+    "etf": false,
+    "ivBands": [
+     30,
+     48,
+     60
+    ]
+   },
+   "measured": {
+    "asof": "2026-11-18",
+    "last": 150.96,
+    "hv20": 0.5168,
+    "hv60": 0.4412,
+    "atrPct": 7.899
+   }
+  },
+  "OXY": {
+   "overrides": {
+    "band": 0.45,
+    "material": 1.0,
+    "deltaMin": 0.45,
+    "deltaMax": 0.82,
+    "liqTier": 3,
+    "minOpenInterest": 500,
+    "minVolume": 200,
+    "expiries": "weekly",
+    "etf": false,
+    "ivBands": [
+     22,
+     35,
+     52
+    ]
+   },
+   "measured": {
+    "asof": "2026-11-18",
+    "last": 53.76,
+    "hv20": 0.3711,
+    "hv60": 0.327,
+    "atrPct": 3.715
+   }
+  },
+  "QQQ": {
+   "overrides": {
+    "band": 0.3,
+    "material": 0.5,
+    "deltaMin": 0.44,
+    "deltaMax": 0.8,
+    "liqTier": 1,
+    "minOpenInterest": 5000,
+    "minVolume": 1000,
+    "expiries": "daily",
+    "etf": true,
+    "ivBands": [
+     14,
+     23,
+     32
+    ]
+   },
+   "measured": {
+    "asof": "2026-11-18",
+    "last": 659.51,
+    "hv20": 0.3626,
+    "hv60": 0.2468,
+    "atrPct": 2.988
+   }
+  },
+  "SLV": {
+   "overrides": {
+    "band": 0.35,
+    "material": 1.5,
+    "deltaMin": 0.42,
+    "deltaMax": 0.78,
+    "liqTier": 4,
+    "minOpenInterest": 300,
+    "minVolume": 100,
+    "expiries": "weekly",
+    "etf": true,
+    "ivBands": [
+     22,
+     50,
+     80
+    ]
+   },
+   "measured": {
+    "asof": "2026-11-18",
+    "last": 40.7,
+    "hv20": 0.4592,
+    "hv60": 0.4138,
+    "atrPct": 4.047
+   }
+  },
+  "SPY": {
+   "overrides": {
+    "band": 0.25,
+    "material": 0.45,
+    "deltaMin": 0.42,
+    "deltaMax": 0.78,
+    "liqTier": 1,
+    "minOpenInterest": 5000,
+    "minVolume": 1000,
+    "expiries": "daily",
+    "etf": true,
+    "ivBands": [
+     12,
+     20,
+     30
+    ]
+   },
+   "measured": {
+    "asof": "2026-11-18",
+    "last": 730.2,
+    "hv20": 0.2309,
+    "hv60": 0.155,
+    "atrPct": 1.961
+   }
+  },
+  "TSLA": {
+   "overrides": {
+    "band": 0.7,
+    "material": 1.7,
+    "deltaMin": 0.47,
+    "deltaMax": 0.82,
+    "liqTier": 2,
+    "minOpenInterest": 2000,
+    "minVolume": 500,
+    "expiries": "weekly",
+    "etf": false,
+    "ivBands": [
+     35,
+     55,
+     70
+    ]
+   },
+   "measured": {
+    "asof": "2026-11-18",
+    "last": 383.72,
+    "hv20": 0.5945,
+    "hv60": 0.4663,
+    "atrPct": 4.682
+   }
+  },
+  "USO": {
+   "overrides": {
+    "band": 0.35,
+    "material": 1.7,
+    "deltaMin": 0.42,
+    "deltaMax": 0.78,
+    "liqTier": 3,
+    "minOpenInterest": 500,
+    "minVolume": 200,
+    "expiries": "weekly",
+    "etf": true,
+    "ivBands": [
+     25,
+     55,
+     95
+    ]
+   },
+   "measured": {
+    "asof": "2026-11-18",
+    "last": 136.11,
+    "hv20": 0.5115,
+    "hv60": 0.4371,
+    "atrPct": 4.222
+   }
+  },
+  "XOM": {
+   "overrides": {
+    "band": 0.35,
+    "material": 0.8,
+    "deltaMin": 0.45,
+    "deltaMax": 0.82,
+    "liqTier": 3,
+    "minOpenInterest": 500,
+    "minVolume": 200,
+    "expiries": "weekly",
+    "etf": false,
+    "ivBands": [
+     18,
+     28,
+     42
+    ]
+   },
+   "measured": {
+    "asof": "2026-11-18",
+    "last": 160.58,
+    "hv20": 0.3445,
+    "hv60": 0.278,
+    "atrPct": 3.055
+   }
+  }
+ }
+}
