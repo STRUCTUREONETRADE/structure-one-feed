@@ -1,29 +1,381 @@
 {
-  "about": "Structure One options calibration. Hand-edited settings for picking strikes from an uploaded 7-21 DTE chain. calib.py merges these with measured volatility (HV20, HV60, ATR) and the 13-week T-bill rate, writes data/calibration.json and adds a 'cal' block to every data/chart/SYM.json the site reads. Change a value here, commit, and the next feed run carries it to the site.",
-  "defaults": {
-    "dteMin": 7,
-    "dteMax": 21,
-    "deltaMin": 0.45,
-    "deltaMax": 0.65,
-    "deltaTarget": 0.55,
-    "maxSpreadPct": 8,
-    "minOpenInterest": 100,
-    "minVolume": 0,
-    "thetaMaxPctPerDay": 5,
-    "stopPct": 25,
-    "ivHvMax": 1.8,
-    "dividendYield": 0,
-    "weights": {"delta": 0.30, "spread": 0.20, "liquidity": 0.15, "theta": 0.15, "iv": 0.10, "dte": 0.10}
-  },
-  "symbols": {
-    "SPY": {"maxSpreadPct": 3, "minOpenInterest": 500},
-    "QQQ": {"maxSpreadPct": 3, "minOpenInterest": 500},
-    "AAPL": {"maxSpreadPct": 5}, "MSFT": {"maxSpreadPct": 5}, "NVDA": {"maxSpreadPct": 5},
-    "AMZN": {"maxSpreadPct": 5}, "META": {"maxSpreadPct": 5}, "GOOG": {"maxSpreadPct": 5},
-    "TSLA": {"maxSpreadPct": 5}, "AMD": {"maxSpreadPct": 6}, "NFLX": {"maxSpreadPct": 6},
-    "AVGO": {"maxSpreadPct": 6}, "MU": {"maxSpreadPct": 6}, "GLD": {"maxSpreadPct": 6},
-    "SLV": {"maxSpreadPct": 8}, "USO": {"maxSpreadPct": 8}, "JPM": {"maxSpreadPct": 8},
-    "BAC": {"maxSpreadPct": 8}, "XOM": {"maxSpreadPct": 8}, "CVX": {"maxSpreadPct": 8},
-    "OXY": {"maxSpreadPct": 8}, "INTC": {"maxSpreadPct": 8}
+ "about": "Structure One options calibration for the S1 Charts strike picker. Per-symbol values are transcribed from STRUCTURE_ONE_CALIBRATION_OCT2026 (CL#263): IV bands (SECTION 1 \u00b7 LOW < a \u00b7 NORMAL a\u2013b \u00b7 HIGH b\u2013c \u00b7 EXTREME >= c), delta bands (SECTION 2), the pullback interaction band (2B), the MATERIAL gap (2D) and the liquidity tiers (3). The record says the kernel wins any disagreement. calib.py merges these with measured HV20/HV60/ATR% and the 13-week T-bill rate, writes data/calibration.json and adds a 'cal' block to every data/chart/SYM.json the site reads.",
+ "source": "STRUCTURE_ONE_CALIBRATION_OCT2026 \u00b7 CL#263 (2026-11-16)",
+ "defaults": {
+  "dteMin": 7,
+  "dteMax": 21,
+  "dteTargets": [
+   7,
+   10,
+   14,
+   21
+  ],
+  "anchorMin": 10,
+  "maxSpreadPct": 5,
+  "stopPct": 25,
+  "thetaMaxPctPerDay": 5,
+  "ivHvMax": 1.8,
+  "dividendYield": 0,
+  "weights": {
+   "delta": 0.35,
+   "spread": 0.25,
+   "liquidity": 0.2,
+   "theta": 0.1,
+   "iv": 0.1
   }
+ },
+ "symbols": {
+  "SPY": {
+   "band": 0.25,
+   "material": 0.45,
+   "deltaMin": 0.42,
+   "deltaMax": 0.78,
+   "liqTier": 1,
+   "minOpenInterest": 5000,
+   "minVolume": 1000,
+   "expiries": "daily",
+   "etf": true,
+   "ivBands": [
+    12,
+    20,
+    30
+   ]
+  },
+  "QQQ": {
+   "band": 0.3,
+   "material": 0.5,
+   "deltaMin": 0.44,
+   "deltaMax": 0.8,
+   "liqTier": 1,
+   "minOpenInterest": 5000,
+   "minVolume": 1000,
+   "expiries": "daily",
+   "etf": true,
+   "ivBands": [
+    14,
+    23,
+    32
+   ]
+  },
+  "AAPL": {
+   "band": 0.35,
+   "material": 0.8,
+   "deltaMin": 0.45,
+   "deltaMax": 0.82,
+   "liqTier": 2,
+   "minOpenInterest": 2000,
+   "minVolume": 500,
+   "expiries": "weekly",
+   "etf": false,
+   "ivBands": [
+    18,
+    28,
+    38
+   ]
+  },
+  "AMZN": {
+   "band": 0.45,
+   "material": 0.95,
+   "deltaMin": 0.42,
+   "deltaMax": 0.78,
+   "liqTier": 2,
+   "minOpenInterest": 2000,
+   "minVolume": 500,
+   "expiries": "weekly",
+   "etf": false,
+   "ivBands": [
+    22,
+    34,
+    55
+   ]
+  },
+  "GOOG": {
+   "band": 0.4,
+   "material": 0.95,
+   "deltaMin": 0.42,
+   "deltaMax": 0.78,
+   "liqTier": 2,
+   "minOpenInterest": 2000,
+   "minVolume": 500,
+   "expiries": "weekly",
+   "etf": false,
+   "ivBands": [
+    22,
+    32,
+    48
+   ]
+  },
+  "META": {
+   "band": 0.5,
+   "material": 1.05,
+   "deltaMin": 0.46,
+   "deltaMax": 0.82,
+   "liqTier": 2,
+   "minOpenInterest": 2000,
+   "minVolume": 500,
+   "expiries": "weekly",
+   "etf": false,
+   "ivBands": [
+    22,
+    40,
+    62
+   ]
+  },
+  "MSFT": {
+   "band": 0.35,
+   "material": 0.85,
+   "deltaMin": 0.45,
+   "deltaMax": 0.82,
+   "liqTier": 2,
+   "minOpenInterest": 2000,
+   "minVolume": 500,
+   "expiries": "weekly",
+   "etf": false,
+   "ivBands": [
+    18,
+    30,
+    52
+   ]
+  },
+  "NFLX": {
+   "band": 0.5,
+   "material": 1.25,
+   "deltaMin": 0.48,
+   "deltaMax": 0.82,
+   "liqTier": 3,
+   "minOpenInterest": 500,
+   "minVolume": 200,
+   "expiries": "weekly",
+   "etf": false,
+   "ivBands": [
+    25,
+    42,
+    56
+   ]
+  },
+  "NVDA": {
+   "band": 0.6,
+   "material": 1.45,
+   "deltaMin": 0.46,
+   "deltaMax": 0.82,
+   "liqTier": 2,
+   "minOpenInterest": 2000,
+   "minVolume": 500,
+   "expiries": "weekly",
+   "etf": false,
+   "ivBands": [
+    30,
+    48,
+    60
+   ]
+  },
+  "TSLA": {
+   "band": 0.7,
+   "material": 1.7,
+   "deltaMin": 0.47,
+   "deltaMax": 0.82,
+   "liqTier": 2,
+   "minOpenInterest": 2000,
+   "minVolume": 500,
+   "expiries": "weekly",
+   "etf": false,
+   "ivBands": [
+    35,
+    55,
+    70
+   ]
+  },
+  "AMD": {
+   "band": 0.6,
+   "material": 1.75,
+   "deltaMin": 0.46,
+   "deltaMax": 0.82,
+   "liqTier": 2,
+   "minOpenInterest": 2000,
+   "minVolume": 500,
+   "expiries": "weekly",
+   "etf": false,
+   "ivBands": [
+    34,
+    60,
+    85
+   ]
+  },
+  "MU": {
+   "band": 0.7,
+   "material": 1.7,
+   "deltaMin": 0.46,
+   "deltaMax": 0.82,
+   "liqTier": 2,
+   "minOpenInterest": 2000,
+   "minVolume": 500,
+   "expiries": "weekly",
+   "etf": false,
+   "ivBands": [
+    34,
+    58,
+    110
+   ]
+  },
+  "AVGO": {
+   "band": 0.6,
+   "material": 1.55,
+   "deltaMin": 0.45,
+   "deltaMax": 0.82,
+   "liqTier": 2,
+   "minOpenInterest": 2000,
+   "minVolume": 500,
+   "expiries": "weekly",
+   "etf": false,
+   "ivBands": [
+    30,
+    52,
+    72
+   ]
+  },
+  "INTC": {
+   "band": 0.6,
+   "material": 1.7,
+   "deltaMin": 0.45,
+   "deltaMax": 0.82,
+   "liqTier": 2,
+   "minOpenInterest": 2000,
+   "minVolume": 500,
+   "expiries": "weekly",
+   "etf": false,
+   "ivBands": [
+    34,
+    58,
+    112
+   ]
+  },
+  "JPM": {
+   "band": 0.35,
+   "material": 0.7,
+   "deltaMin": 0.42,
+   "deltaMax": 0.78,
+   "liqTier": 2,
+   "minOpenInterest": 2000,
+   "minVolume": 500,
+   "expiries": "weekly",
+   "etf": false,
+   "ivBands": [
+    16,
+    28,
+    42
+   ]
+  },
+  "BAC": {
+   "band": 0.35,
+   "material": 0.75,
+   "deltaMin": 0.42,
+   "deltaMax": 0.78,
+   "liqTier": 2,
+   "minOpenInterest": 2000,
+   "minVolume": 500,
+   "expiries": "weekly",
+   "etf": false,
+   "ivBands": [
+    18,
+    30,
+    44
+   ]
+  },
+  "GLD": {
+   "band": 0.25,
+   "material": 0.9,
+   "deltaMin": 0.42,
+   "deltaMax": 0.78,
+   "liqTier": 3,
+   "minOpenInterest": 500,
+   "minVolume": 200,
+   "expiries": "weekly",
+   "etf": true,
+   "ivBands": [
+    14,
+    28,
+    48
+   ]
+  },
+  "SLV": {
+   "band": 0.35,
+   "material": 1.5,
+   "deltaMin": 0.42,
+   "deltaMax": 0.78,
+   "liqTier": 4,
+   "minOpenInterest": 300,
+   "minVolume": 100,
+   "expiries": "weekly",
+   "etf": true,
+   "ivBands": [
+    22,
+    50,
+    80
+   ]
+  },
+  "CVX": {
+   "band": 0.35,
+   "material": 0.8,
+   "deltaMin": 0.45,
+   "deltaMax": 0.82,
+   "liqTier": 3,
+   "minOpenInterest": 500,
+   "minVolume": 200,
+   "expiries": "weekly",
+   "etf": false,
+   "ivBands": [
+    18,
+    28,
+    38
+   ]
+  },
+  "OXY": {
+   "band": 0.45,
+   "material": 1.0,
+   "deltaMin": 0.45,
+   "deltaMax": 0.82,
+   "liqTier": 3,
+   "minOpenInterest": 500,
+   "minVolume": 200,
+   "expiries": "weekly",
+   "etf": false,
+   "ivBands": [
+    22,
+    35,
+    52
+   ]
+  },
+  "XOM": {
+   "band": 0.35,
+   "material": 0.8,
+   "deltaMin": 0.45,
+   "deltaMax": 0.82,
+   "liqTier": 3,
+   "minOpenInterest": 500,
+   "minVolume": 200,
+   "expiries": "weekly",
+   "etf": false,
+   "ivBands": [
+    18,
+    28,
+    42
+   ]
+  },
+  "USO": {
+   "band": 0.35,
+   "material": 1.7,
+   "deltaMin": 0.42,
+   "deltaMax": 0.78,
+   "liqTier": 3,
+   "minOpenInterest": 500,
+   "minVolume": 200,
+   "expiries": "weekly",
+   "etf": true,
+   "ivBands": [
+    25,
+    55,
+    95
+   ]
+  }
+ }
 }
