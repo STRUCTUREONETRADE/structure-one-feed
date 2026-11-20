@@ -2,7 +2,7 @@ name: Hourly closes (session loop)
 # Two long jobs cover the trading day. Each waits for every 1-hour close
 # (10:00 = C1 ... 16:00 = C7, New York time), runs the feed about a minute later
 # and saves the data, so the website gets each candle within minutes of its close.
-# Every two minutes in between it also saves the forming candle (data/forming.json), from 1-minute bars.
+# Every minute in between it also saves the forming candle (data/forming.json), from 1-minute bars.
 # GitHub may start a scheduled job late; the loop still catches every close.
 on:
   schedule:
@@ -35,19 +35,23 @@ jobs:
           git config user.email "feed-bot@users.noreply.github.com"
           mkdir -p data
           started=$(date +%s)
-          # hourly closes at :01 (full feed + forming); the forming candle (forming.json only) every two minutes in between,
-          # read live by the site for viewers with GitHub connected, and copied in by the site's syncs every ten minutes
-          # every two minutes from 9:31 (1-minute bars), plus the full hourly feed at :01
-          targets=""; for m in 31 33 35 37 39 41 43 45 47 49 51 53 55 57 59; do targets="$targets 09:$m"; done
-          for h in 10 11 12 13 14 15; do targets="$targets $h:01"; for m in 03 05 07 09 11 13 15 17 19 21 23 25 27 29 31 33 35 37 39 41 43 45 47 49 51 53 55 57 59; do targets="$targets $h:$m"; done; done
-          targets="$targets 16:01 16:20"
-          for target in $targets; do
+          # schedule.sh lists the save times: the full feed at :01, the forming candle every other minute.
+          # It is re-read before every wait, so a schedule change pushed to main applies to the running job.
+          last=""
+          while :; do
+            git pull -q --rebase origin main || true
             now_et=$(TZ=America/New_York date +%H:%M)
-            if [[ "$now_et" > "$target" ]]; then continue; fi
+            target=""
+            for t in $(bash schedule.sh); do
+              if [[ ! "$now_et" > "$t" && "$t" > "$last" ]]; then target=$t; break; fi
+            done
+            [[ -z "$target" ]] && { echo "No more save times today"; break; }
             # stay inside GitHub's 6-hour job limit
             wait=$(( $(TZ=America/New_York date -d "$target" +%s) - $(date +%s) ))
+            (( wait < 0 )) && wait=0
             if (( $(date +%s) - started + wait > 20700 )); then echo "Leaving $target to the other job"; break; fi
             echo "Waiting ${wait}s for $target ET"; sleep "$wait"
+            last=$target
             git pull -q --rebase origin main || true
             if [[ "$target" == *:01 || "$target" == "16:20" ]]; then
               python feed.py || { echo "feed failed at $target"; continue; }
