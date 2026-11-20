@@ -35,8 +35,8 @@ jobs:
           mkdir -p data
           started=$(date +%s)
           # hourly closes at :01 (full feed + forming); the forming candle at :05, :20, :35 and :50 (forming.json only),
-          # two minutes before the site's forming-candle syncs at :07, :22, :37 and :52
-          targets="09:50"; for h in 10 11 12 13 14 15; do targets="$targets $h:01 $h:05 $h:20 $h:35 $h:50"; done; targets="$targets 16:01 16:20"
+          # two minutes before the site's forming-candle syncs at :07, :22, :37 and :52 (the first one at 9:37, seven minutes after the open)
+          targets="09:35 09:50"; for h in 10 11 12 13 14 15; do targets="$targets $h:01 $h:05 $h:20 $h:35 $h:50"; done; targets="$targets 16:01 16:20"
           for target in $targets; do
             now_et=$(TZ=America/New_York date +%H:%M)
             if [[ "$now_et" > "$target" ]]; then continue; fi
