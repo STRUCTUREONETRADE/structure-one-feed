@@ -2,7 +2,7 @@ name: Hourly closes (session loop)
 # Two long jobs cover the trading day. Each waits for every 1-hour close
 # (10:00 = C1 ... 16:00 = C7, New York time), runs the feed about a minute later
 # and saves the data, so the website gets each candle within minutes of its close.
-# Four times an hour (:05, :20, :35, :50) it also saves the forming candle (data/forming.json).
+# Every two minutes in between it also saves the forming candle (data/forming.json), from 1-minute bars.
 # GitHub may start a scheduled job late; the loop still catches every close.
 on:
   schedule:
@@ -34,9 +34,12 @@ jobs:
           git config user.email "feed-bot@users.noreply.github.com"
           mkdir -p data
           started=$(date +%s)
-          # hourly closes at :01 (full feed + forming); the forming candle at :05, :20, :35 and :50 (forming.json only),
-          # two minutes before the site's forming-candle syncs at :07, :22, :37 and :52 (the first one at 9:37, seven minutes after the open)
-          targets="09:35 09:50"; for h in 10 11 12 13 14 15; do targets="$targets $h:01 $h:05 $h:20 $h:35 $h:50"; done; targets="$targets 16:01 16:20"
+          # hourly closes at :01 (full feed + forming); the forming candle (forming.json only) every two minutes in between,
+          # read live by the site for viewers with GitHub connected, and copied in by the site's syncs every ten minutes
+          # every two minutes from 9:32 (1-minute bars), plus the full hourly feed at :01
+          targets=""; for m in 32 34 36 38 40 42 44 46 48 50 52 54 56 58; do targets="$targets 09:$m"; done
+          for h in 10 11 12 13 14 15; do targets="$targets $h:01"; for m in 03 05 07 09 11 13 15 17 19 21 23 25 27 29 31 33 35 37 39 41 43 45 47 49 51 53 55 57 59; do targets="$targets $h:$m"; done; done
+          targets="$targets 16:01 16:20"
           for target in $targets; do
             now_et=$(TZ=America/New_York date +%H:%M)
             if [[ "$now_et" > "$target" ]]; then continue; fi

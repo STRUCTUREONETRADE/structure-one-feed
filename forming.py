@@ -1,7 +1,7 @@
 # Structure One feed · intrahour snapshot (runs every 15 minutes in the session loop).
 #   data/forming.json  the 1-hour candle still forming (C1 = 9:30-10:00, then full hours to 16:00),
 #                      labelled by the close time it will have, and today's session so far,
-#                      both built from Yahoo 5-minute bars. A forming candle is never a close.
+#                      both built from Yahoo 1-minute bars. A forming candle is never a close.
 import json
 import os
 
@@ -18,7 +18,7 @@ os.makedirs("data", exist_ok=True)
 
 out = {"generated": now.tz_convert("UTC").isoformat(timespec="seconds"), "tz": ET,
        "note": "forming = the 1-hour candle in progress, labelled by its close time; day = today's session so far; "
-               "built from 5-minute bars; neither is a completed close",
+               "built from 1-minute bars; neither is a completed close",
        "at": now.strftime("%H:%M"), "forming": {}, "day": {}}
 
 if open_t <= now < close_t + pd.Timedelta(minutes=5):
@@ -27,7 +27,7 @@ if open_t <= now < close_t + pd.Timedelta(minutes=5):
         start = open_t
     end = (open_t + pd.Timedelta(minutes=30)) if start == open_t else start + pd.Timedelta(hours=1)
     label = end.strftime("%Y-%m-%d %H:%M")
-    df = yf.download(SYMS, period="1d", interval="5m", group_by="ticker", auto_adjust=False,
+    df = yf.download(SYMS, period="1d", interval="1m", group_by="ticker", auto_adjust=False,
                      prepost=False, progress=False, threads=True)
     for s in SYMS:
         try:
