@@ -1,7 +1,7 @@
 {
- "generated": "2026-11-20T15:01:14+00:00",
+ "generated": "2026-11-20T15:32:37+00:00",
  "rate": {
-  "value": 0.04143,
+  "value": 0.04145,
   "asof": "2026-11-20",
   "source": "^IRX 13-week T-bill (Yahoo Finance)"
  },
