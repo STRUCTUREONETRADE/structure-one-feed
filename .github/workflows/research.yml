@@ -1,0 +1,27 @@
+name: Research history (TYPE 8 study)
+# One-off: runs only on pushes to the research-t8 branch that change the fetch script. The live feed is not affected.
+on:
+  push:
+    branches: [research-t8]
+    paths: ["research/fetch.py", ".github/workflows/research.yml"]
+permissions:
+  contents: write
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install yfinance pandas
+      - run: python research/fetch.py
+        env:
+          TWELVEDATA_API_KEY: ${{ secrets.TWELVEDATA_API_KEY }}
+      - run: |
+          git config user.name "feed-bot"
+          git config user.email "feed-bot@users.noreply.github.com"
+          git add research/data
+          git commit -m "Research history for the TYPE 8 study [skip ci]" || exit 0
+          git push origin research-t8
