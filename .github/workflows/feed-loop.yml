@@ -6,14 +6,14 @@ name: Hourly closes (session loop)
 # GitHub may start a scheduled job late; the loop still catches every close.
 on:
   schedule:
-    - cron: "20 13 * * 1-5"   # morning job (8:20 ET in winter, 9:20 ET in summer)
-    - cron: "0 18 * * 1-5"    # afternoon job (1:00 PM ET in winter, 2:00 PM ET in summer)
+    - cron: "50 12 * * 1-5"   # morning job (7:50 ET in winter, 8:50 ET in summer) · early, so a late GitHub start still begins before 9:31
+    - cron: "30 17 * * 1-5"   # afternoon job (12:30 PM ET in winter, 1:30 PM ET in summer) · starts before the morning job leaves
   workflow_dispatch:
 permissions:
   contents: write
 concurrency:
   # a manual run shares the afternoon job's group, so the afternoon job waits for it instead of running alongside
-  group: feed-loop-${{ github.event.schedule == '20 13 * * 1-5' && 'am' || 'pm' }}
+  group: feed-loop-${{ github.event.schedule == '50 12 * * 1-5' && 'am' || 'pm' }}
   cancel-in-progress: false
 jobs:
   loop:
