@@ -2,6 +2,8 @@
 #   data/forming.json  the 1-hour candle still forming (C1 = 9:30-10:00, then full hours to 16:00),
 #                      labelled by the close time it will have, and today's session so far,
 #                      both built from Yahoo 1-minute bars. A forming candle is never a close.
+#                      The day row carries a 7th element: today's COMPLETED 15-minute candles
+#                      ([[close time, o, h, l, c, v], ...], 09:45 ... ), for the website's 15-minute timing read.
 import json
 import os
 
@@ -40,6 +42,22 @@ if open_t <= now < close_t + pd.Timedelta(minutes=5):
             v = d["Volume"].fillna(0)
             out["day"][s] = [today, round(float(d.Open.iloc[0]), 2), round(float(d.High.max()), 2),
                              round(float(d.Low.min()), 2), round(float(d.Close.iloc[-1]), 2), int(v.sum())]
+            # today's completed 15-minute candles (a bucket counts once 2 minutes past its close, so its last minute bar is in)
+            try:
+                q = d.copy()
+                q["Volume"] = q["Volume"].fillna(0)
+                g15 = q.groupby(q.index.floor("15min")).agg(Open=("Open", "first"), High=("High", "max"),
+                                                              Low=("Low", "min"), Close=("Close", "last"),
+                                                              Volume=("Volume", "sum"))
+                rows15 = []
+                for t, r in g15.iterrows():
+                    ct = t + pd.Timedelta(minutes=15)
+                    if ct + pd.Timedelta(minutes=2) <= now:
+                        rows15.append([ct.strftime("%Y-%m-%d %H:%M"), round(float(r.Open), 2), round(float(r.High), 2),
+                                       round(float(r.Low), 2), round(float(r.Close), 2), int(r.Volume)])
+                out["day"][s].append(rows15)
+            except Exception as e:
+                out.setdefault("m15_errors", {})[s] = str(e)[:200]
             h = d[(d.index >= start) & (d.index < end)]
             if now < end and not h.empty:
                 out["forming"][s] = [label, round(float(h.Open.iloc[0]), 2), round(float(h.High.max()), 2),
