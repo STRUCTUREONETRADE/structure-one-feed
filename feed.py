@@ -5,6 +5,10 @@
 #   data/hist/<SYM>.json  the growing store of 1-hour candles (Yahoo only serves 60 days of 30-minute data,
 #                         so the store keeps everything already collected; Twelve Data back-fills 12 months
 #                         when the TWELVEDATA_API_KEY secret is set)
+#   data/m15/<SYM>.json   the growing store of 15-minute candles (regular hours, labelled by CLOSE time:
+#                         09:45 ... 16:00). Yahoo serves only the last 60 days, so the store keeps everything
+#                         collected from the first run on. The chart file carries the last 5 sessions of them
+#                         ("m15") for the website's 15-minute timing read.
 import json
 import os
 import time
@@ -24,6 +28,8 @@ D_KEEP = 252 + 200        # 12 months of sessions plus MA200 warm-up
 M_KEEP = 260              # monthly candles (MA200 needs 200 months)
 os.makedirs("data/chart", exist_ok=True)
 os.makedirs("data/hist", exist_ok=True)
+os.makedirs("data/m15", exist_ok=True)
+M15_SESSIONS = 5          # sessions of 15-minute candles copied into data/chart/<SYM>.json
 
 
 def one(df, s):
@@ -42,6 +48,9 @@ def fresh(s, kind):
     """Yahoo sometimes drops one symbol from a batch; fetch it alone once more."""
     if kind == "m30":
         return yf.download(s, period="60d", interval="30m", group_by="ticker", auto_adjust=False,
+                           prepost=False, progress=False)
+    if kind == "m15":
+        return yf.download(s, period="60d", interval="15m", group_by="ticker", auto_adjust=False,
                            prepost=False, progress=False)
     return yf.download(s, period="max", interval="1d", group_by="ticker", auto_adjust=False, progress=False)
 
@@ -83,6 +92,34 @@ m30 = yf.download(SYMS, period="60d", interval="30m", group_by="ticker",
                   auto_adjust=False, prepost=False, progress=False, threads=True)
 day = yf.download(SYMS, period="max", interval="1d", group_by="ticker",
                   auto_adjust=False, progress=False, threads=True)
+try:
+    m15 = yf.download(SYMS, period="60d", interval="15m", group_by="ticker",
+                      auto_adjust=False, prepost=False, progress=False, threads=True)
+except Exception as e:  # the 15-minute store must never stop the hourly feed
+    m15 = pd.DataFrame()
+    print("15-minute download failed:", e)
+
+
+def store_m15(s):
+    """Grow data/m15/<SYM>.json with completed regular-hours 15-minute candles; return the last sessions."""
+    d = get(m15, s, "m15")
+    d.index = d.index.tz_convert(ET)
+    d = d[(d.index.time >= pd.Timestamp("09:30").time()) & (d.index.time < pd.Timestamp("16:00").time())]
+    mp = f"data/m15/{s}.json"
+    st = json.load(open(mp)) if os.path.exists(mp) else {"sym": s, "m15": []}
+    keep = {x[0]: x for x in st["m15"]}
+    for t, r in d.iterrows():
+        close_t = t + pd.Timedelta(minutes=15)
+        if close_t <= now:  # completed candles only
+            lab = close_t.strftime("%Y-%m-%d %H:%M")
+            keep[lab] = row(lab, r)
+    st["m15"] = [keep[k] for k in sorted(keep)]
+    st["generated"] = now.tz_convert("UTC").isoformat(timespec="seconds")
+    st["note"] = "15-minute candles, regular hours, labelled by close time (09:45 ... 16:00); completed candles only"
+    json.dump(st, open(mp, "w"), separators=(",", ":"))
+    days = sorted({x[0][:10] for x in st["m15"]})[-M15_SESSIONS:]
+    return [x for x in st["m15"] if x[0][:10] in days]
+
 
 out = {"generated": now.tz_convert("UTC").isoformat(timespec="seconds"), "tz": ET,
        "note": "h1 = completed 1-hour candles labelled by CLOSE time (10:00 = C1 ... 16:00 = C7); "
@@ -137,8 +174,13 @@ for s in SYMS:
             months = [row(t.strftime("%Y-%m"), r) for t, r in mo.iterrows()]
         out["monthly"][s] = months[-121:]
 
+        try:
+            recent15 = store_m15(s)
+        except Exception as e:  # never let the 15-minute store stop the chart file
+            recent15 = []
+            out.setdefault("m15_errors", {})[s] = str(e)[:200]
         json.dump({"sym": s, "generated": out["generated"], "h1": hist["h1"], "d": done_day[-D_KEEP:],
-                   "m": months[-M_KEEP:]}, open(f"data/chart/{s}.json", "w"), separators=(",", ":"))
+                   "m": months[-M_KEEP:], "m15": recent15}, open(f"data/chart/{s}.json", "w"), separators=(",", ":"))
 
         # the quote is the close of the last COMPLETED 1-hour candle (C1 10:00 ... C7 16:00)
         lastc = recent[-1] if recent else None
